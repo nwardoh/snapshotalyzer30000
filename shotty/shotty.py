@@ -99,7 +99,7 @@ def create_snapshots(project):
             if has_pending_snapshot(v):
                 print(" Skipping {0}, snapshot already in progress".format(v.id))
                 continue
-                
+
             print(" Creating snapshot of {0}".format(v.id))
             v.create_snapshot(Description="Created by snapshotalyzer30000")
 
@@ -163,6 +163,24 @@ def start_instances(project):
             i.start()
         except botocore.exceptions.ClientError as e:
             print(" Could not start {0}. ".format(i.id) + str(e))
+            continue
+
+    return
+
+@instances.command('reboot')
+@click.option('--project', default=None,
+    help='Only instances for project')
+def reboot_instances(project):
+    "Reboot EC2 Instances"
+
+    instances = filter_instances(project)
+
+    for i in instances:
+        print('Rebooting {0}... '.format(i.id))
+        try:
+            i.reboot()
+        except botocore.exceptions.ClientError as e:
+            print(" Could not reboot {0}. ".format(i.id) + str(e))
             continue
 
     return
